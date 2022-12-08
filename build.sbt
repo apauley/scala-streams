@@ -12,8 +12,11 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "dev.zio" %% "zio" % zioVersion,
       "dev.zio" %% "zio-test" % zioVersion % Test,
-      "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
+      "com.softwaremill.sttp.tapir" %% "tapir-sttp-client" % tapirVersion,
+      "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % tapirVersion,
+      "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % tapirVersion,
+      "org.http4s" %% "http4s-blaze-server" % "0.23.12",
     ),
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
