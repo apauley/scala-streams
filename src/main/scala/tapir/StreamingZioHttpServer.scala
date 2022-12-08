@@ -1,13 +1,13 @@
+package tapir
 
 import sttp.capabilities.zio.ZioStreams
 import sttp.model.HeaderNames
-import sttp.tapir.{CodecFormat, PublicEndpoint}
-import sttp.tapir.ztapir._
 import sttp.tapir.server.ziohttp.ZioHttpInterpreter
-import zio.http.HttpApp
-import zio.http.{Server, ServerConfig}
+import sttp.tapir.ztapir.*
+import sttp.tapir.{CodecFormat, PublicEndpoint}
+import zio.http.{HttpApp, Server, ServerConfig}
+import zio.stream.*
 import zio.{ExitCode, Schedule, URIO, ZIO, ZIOAppDefault}
-import zio.stream._
 
 import java.nio.charset.StandardCharsets
 import java.time.Duration
@@ -31,7 +31,7 @@ object StreamingZioHttpServer extends ZIOAppDefault {
       .zipWith(ZStream[Char]('a', 'b', 'c', 'd').repeat(Schedule.forever))((_, c) => c)
       .take(size)
       .map(_.toByte)
-      .tap(x => ZIO.succeed(println("XXX " + x)))
+      .tap(x => ZIO.logInfo("XXX " + x))
 
     ZIO.succeed((size, stream))
   }
