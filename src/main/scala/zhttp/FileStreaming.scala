@@ -1,9 +1,10 @@
 package zhttp
 
-import zio._
-import zio.http._
+import zio.*
+import zio.http.*
 import zio.http.model.Method
 import zio.stream.ZStream
+import zutil.StreamHelpers
 
 import java.io.File
 import java.nio.file.Paths
@@ -16,12 +17,14 @@ object FileStreaming extends ZIOAppDefault {
 
     // Read the file as ZStream
     // Uses the blocking version of ZStream.fromFile
-    case Method.GET -> !! / "blocking" => Http.fromStream(ZStream.fromPath(Paths.get("README.md")))
+    case Method.GET -> !! / "blocking" => Http.fromStream(ZStream.fromPath(Paths.get("src/main/resources/TestVideoFile.m4v")))
+    case Method.GET -> !! / "receive" => Http.fromStream(StreamHelpers.tickStream(100L, 100))
+
 
     // Uses netty's capability to write file content to the Channel
     // Content-type response headers are automatically identified and added
     // Adds content-length header and does not use Chunked transfer encoding
-    case Method.GET -> !! / "video" => Http.fromFile(new File("src/main/resources/TestVideoFile.mp4"))
+    case Method.GET -> !! / "video" => Http.fromFile(new File("src/main/resources/TestVideoFile.m4v"))
     case Method.GET -> !! / "text"  => Http.fromFile(new File("src/main/resources/TestFile.txt"))
   }
 

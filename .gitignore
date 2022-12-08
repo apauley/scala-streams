@@ -1,6 +1,8 @@
 *.class
 *.log
 
+.DS_Store
+
 .cache
 .history
 .lib/
@@ -21,3 +23,4 @@ template.yaml
 .java-version
 
 file-uploads
+**/resources/Test*

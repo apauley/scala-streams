@@ -8,6 +8,7 @@ import sttp.tapir.{CodecFormat, PublicEndpoint}
 import zio.http.{HttpApp, Server, ServerConfig}
 import zio.stream.*
 import zio.{ExitCode, Schedule, URIO, ZIO, ZIOAppDefault}
+import zutil.StreamHelpers
 
 import java.nio.charset.StandardCharsets
 import java.time.Duration
@@ -25,14 +26,7 @@ object StreamingZioHttpServer extends ZIOAppDefault {
   // converting an endpoint to a route (providing server-side logic)
   val streamingServerEndpoint: ZServerEndpoint[Any, ZioStreams] = streamingEndpoint.zServerLogic { _ =>
     val size = 100L
-
-    val stream = ZStream
-      .tick(Duration.ofMillis(100))
-      .zipWith(ZStream[Char]('a', 'b', 'c', 'd').repeat(Schedule.forever))((_, c) => c)
-      .take(size)
-      .map(_.toByte)
-      .tap(x => ZIO.logInfo("XXX " + x))
-
+    val stream = StreamHelpers.tickStream(size, 100)
     ZIO.succeed((size, stream))
   }
 
