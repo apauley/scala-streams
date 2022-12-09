@@ -24,6 +24,9 @@ object FileStreaming extends ZIOAppDefault {
 
     case Method.GET -> !! / "receive" => Http.fromStream(StreamHelpers.tickStream(1000L, 10))
     case Method.GET -> !! / "q" => Http.fromStream(StreamHelpers.sampleQStream("Hello bleep"))
+    case Method.GET -> !! / "random" => Http.fromStream(StreamHelpers.randomInts.map(_.toString))
+    case Method.GET -> !! / "r100" =>
+      Http.fromStream(StreamHelpers.randomInts.take(100).map(_.toString))
 
 
     // Uses netty's capability to write file content to the Channel
