@@ -3,11 +3,11 @@ package util
 import zio._
 import zio.stream.{Stream, UStream, ZStream}
 
-import java.time.Duration
+import zio.Duration
 
 object ZHelpers {
-  def tickStream(size: Long, millis: Int): UStream[Byte] = ZStream
-    .tick(Duration.ofMillis(millis))
+  def tickStream(size: Long, interval: Duration): UStream[Byte] = ZStream
+    .tick(interval)
     .zipWith(ZStream[Char]('a', 'b', 'c', 'd').repeat(Schedule.forever))((_, c) => c)
     .take(size)
     .map(_.toByte)

@@ -11,6 +11,7 @@ import sttp.client3.*
 import sttp.model.HeaderNames
 import sttp.tapir.*
 import sttp.tapir.server.http4s.Http4sServerInterpreter
+import util.FS2Helpers
 
 import java.nio.charset.StandardCharsets
 import scala.concurrent.duration.*
@@ -30,14 +31,8 @@ object StreamingHttp4sFs2Server extends IOApp {
   val streamingRoutes: HttpRoutes[IO] =
     Http4sServerInterpreter[IO]().toRoutes(streamingEndpoint.serverLogicSuccess { _ =>
       val size = 100L
-      Stream
-        .emit(List[Char]('a', 'b', 'c', 'd'))
-        .repeat
-        .flatMap(list => Stream.chunk(Chunk.seq(list)))
-        .metered[IO](100.millis)
-        .take(size)
-        .covary[IO]
-        .map(_.toByte)
+      FS2Helpers
+        .tickStream(size, 100.millis)
         .pure[IO]
         .map(s => (size, s))
     })

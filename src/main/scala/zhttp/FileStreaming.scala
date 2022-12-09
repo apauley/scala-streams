@@ -22,7 +22,7 @@ object FileStreaming extends ZIOAppDefault {
     case Method.GET -> !! / "blocking" => Http.fromStream(ZStream.fromPath(Paths.get(testVideo)))
     case Method.GET -> !! / "filezio" => Http.fromFileZIO(ZIO.succeed(new File(testVideo)))
 
-    case Method.GET -> !! / "receive" => Http.fromStream(ZHelpers.tickStream(1000L, 10))
+    case Method.GET -> !! / "receive" => Http.fromStream(ZHelpers.tickStream(100L, 100.millis))
     case Method.GET -> !! / "q" => Http.fromStream(ZHelpers.sampleQStream("Hello bleep"))
     case Method.GET -> !! / "random" => Http.fromStream(ZHelpers.randomInts.map(_.toString))
     case Method.GET -> !! / "r100" =>

@@ -5,10 +5,10 @@ import sttp.model.HeaderNames
 import sttp.tapir.server.ziohttp.ZioHttpInterpreter
 import sttp.tapir.ztapir.*
 import sttp.tapir.{CodecFormat, PublicEndpoint}
+import util.ZHelpers
 import zio.http.{HttpApp, Server, ServerConfig}
 import zio.stream.*
-import zio.{ExitCode, Schedule, URIO, ZIO, ZIOAppDefault}
-import util.ZHelpers
+import zio._
 
 import java.nio.charset.StandardCharsets
 import java.time.Duration
@@ -26,7 +26,7 @@ object StreamingZioHttpServer extends ZIOAppDefault {
   // converting an endpoint to a route (providing server-side logic)
   val streamingServerEndpoint: ZServerEndpoint[Any, ZioStreams] = streamingEndpoint.zServerLogic { _ =>
     val size = 100L
-    val stream = ZHelpers.tickStream(size, 100)
+    val stream = ZHelpers.tickStream(size, 100.millis)
     ZIO.succeed((size, stream))
   }
 
