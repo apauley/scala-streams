@@ -1,17 +1,24 @@
-package zutil
+package util
 
 import zio._
 import zio.stream.{Stream, UStream, ZStream}
 
 import java.time.Duration
 
-object StreamHelpers {
+object ZHelpers {
   def tickStream(size: Long, millis: Int): UStream[Byte] = ZStream
     .tick(Duration.ofMillis(millis))
     .zipWith(ZStream[Char]('a', 'b', 'c', 'd').repeat(Schedule.forever))((_, c) => c)
     .take(size)
     .map(_.toByte)
     .tap(x => ZIO.logInfo("XXX " + x))
+
+  val randomInts: ZStream[Any, Throwable, Int] = ZStream.repeatZIO {
+    Random.nextInt.tap { i =>
+      ZIO.logInfo(s"$i ") *>
+      Console.print(s"$i ")
+    }
+  }
 
   def sampleQStream[A](initialValue: A): UStream[A] = ZStream.unwrap {
     Queue.unbounded[A].tap{ q =>

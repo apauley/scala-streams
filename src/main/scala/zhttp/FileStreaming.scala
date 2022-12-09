@@ -4,7 +4,7 @@ import zio.*
 import zio.http.*
 import zio.http.model.Method
 import zio.stream.ZStream
-import zutil.StreamHelpers
+import util.ZHelpers
 
 import java.io.File
 import java.nio.file.Paths
@@ -22,11 +22,11 @@ object FileStreaming extends ZIOAppDefault {
     case Method.GET -> !! / "blocking" => Http.fromStream(ZStream.fromPath(Paths.get(testVideo)))
     case Method.GET -> !! / "filezio" => Http.fromFileZIO(ZIO.succeed(new File(testVideo)))
 
-    case Method.GET -> !! / "receive" => Http.fromStream(StreamHelpers.tickStream(1000L, 10))
-    case Method.GET -> !! / "q" => Http.fromStream(StreamHelpers.sampleQStream("Hello bleep"))
-    case Method.GET -> !! / "random" => Http.fromStream(StreamHelpers.randomInts.map(_.toString))
+    case Method.GET -> !! / "receive" => Http.fromStream(ZHelpers.tickStream(1000L, 10))
+    case Method.GET -> !! / "q" => Http.fromStream(ZHelpers.sampleQStream("Hello bleep"))
+    case Method.GET -> !! / "random" => Http.fromStream(ZHelpers.randomInts.map(_.toString))
     case Method.GET -> !! / "r100" =>
-      Http.fromStream(StreamHelpers.randomInts.take(100).map(_.toString))
+      Http.fromStream(ZHelpers.randomInts.take(100).map(_.toString))
 
 
     // Uses netty's capability to write file content to the Channel
