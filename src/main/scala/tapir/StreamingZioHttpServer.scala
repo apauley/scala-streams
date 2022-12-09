@@ -18,10 +18,10 @@ object StreamingZioHttpServer extends ZIOAppDefault {
   // We need to provide both the schema of the value (for documentation), as well as the format (media type) of the
   // body. Here, the schema is a `string` (set by `streamTextBody`) and the media type is `text/plain`.
   val streamingEndpoint: PublicEndpoint[Unit, Unit, (Long, Stream[Throwable, Byte]), ZioStreams] =
-  endpoint.get
-    .in("receive")
-    .out(header[Long](HeaderNames.ContentLength))
-    .out(streamTextBody(ZioStreams)(CodecFormat.TextPlain(), Some(StandardCharsets.UTF_8)))
+    endpoint.get
+      .in("receive")
+      .out(header[Long](HeaderNames.ContentLength))
+      .out(streamTextBody(ZioStreams)(CodecFormat.TextPlain(), Some(StandardCharsets.UTF_8)))
 
   // converting an endpoint to a route (providing server-side logic)
   val streamingServerEndpoint: ZServerEndpoint[Any, ZioStreams] = streamingEndpoint.zServerLogic { _ =>
