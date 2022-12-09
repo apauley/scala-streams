@@ -30,7 +30,24 @@ object StreamingZioHttpServer extends ZIOAppDefault {
     ZIO.succeed((size, stream))
   }
 
-  val routes: HttpApp[Any, Throwable] = ZioHttpInterpreter().toHttp(streamingServerEndpoint)
+  val qStreamingEndpoint: PublicEndpoint[Unit, Unit, Stream[Throwable, Byte], ZioStreams] =
+    endpoint.get
+      .in("q")
+      .out(
+        streamTextBody(ZioStreams)(
+          format = CodecFormat.TextPlain(),
+          charset = Some(StandardCharsets.UTF_8),
+        ),
+      )
+
+  val qStreamingServerEndpoint: ZServerEndpoint[Any, ZioStreams] = qStreamingEndpoint.zServerLogic { _ =>
+    val stream: UStream[Byte] = ZHelpers.sampleQStream.map(s => Chunk.fromArray(s.getBytes)).flattenChunks
+    ZIO.succeed(stream)
+  }
+
+  val all = List(streamingServerEndpoint, qStreamingServerEndpoint)
+
+  val routes: HttpApp[Any, Throwable] = ZioHttpInterpreter().toHttp(all)
 
   // Test using: curl http://localhost:8080/receive
   override def run: URIO[Any, ExitCode] =

@@ -27,15 +27,7 @@ object FileStreaming extends ZIOAppDefault {
     case Method.GET -> !! / "receive" =>
       Http.fromStream(ZHelpers.tickStream(1000000L, 1.millis))
 
-    case Method.GET -> !! / "q" =>
-      Http.fromStream {
-        ZStream.unwrap {
-          for {
-            q <- Queue.bounded[String](4096)
-            _ <- AppLogic.doQueueStuff(q).fork
-          } yield ZStream.fromQueueWithShutdown(q)
-        }
-      }
+    case Method.GET -> !! / "q" => Http.fromStream(ZHelpers.sampleQStream)
 
     case Method.GET -> !! / "random" =>
       Http.fromStream(ZHelpers.randomInts.map(i => s"$i "))
@@ -51,14 +43,4 @@ object FileStreaming extends ZIOAppDefault {
   // Run it like any simple app
   val run =
     Server.serve(app).provide(Server.default)
-}
-
-object AppLogic {
-  def doQueueStuff(q: Queue[String]): Task[Unit] = {
-    for {
-      now <- Clock.currentDateTime
-      _ <- q.offer(s"$now\n")
-      _ <- ZIO.sleep(1.milli)
-    } yield ()
-  }.forever
 }

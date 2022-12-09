@@ -8,7 +8,7 @@ val tapirVersion = "1.2.3"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "tapir-stream",
+    name := "scala-streams",
     libraryDependencies ++= Seq(
       "dev.zio" %% "zio" % zioVersion,
       "dev.zio" %% "zio-test" % zioVersion % Test,
